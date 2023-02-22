@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Breathing and Health
-image: assets/images/meditation_breath.jpg
+image: /assets/images/meditation_breath.jpg
 featured: true
 hidden: true
 ---
