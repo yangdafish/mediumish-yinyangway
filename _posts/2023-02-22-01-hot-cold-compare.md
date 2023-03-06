@@ -77,6 +77,4 @@ In addition to hot and cold foods, there are also neutral foods that have a bala
 ## Understanding Your Body's Needs
 There is no one-size-fits-all approach to nutrition. Your individual constitution, as well as any health conditions you may have, will determine which foods are best for you. For example, if you tend to feel cold and have a weak digestion, incorporating more warming hot foods into your diet may be beneficial.
 
-It's important to note that the thermal nature of food is just one aspect of TCM nutrition. Other factors, such as taste and energetic properties, also play a role in determining the best foods for your individual needs. Consulting with a TCM practitioner can help you better understand your body's needs and create a personalized nutrition plan.
-
 The thermal nature of food is an important aspect of Chinese Traditional Medicine. By understanding the difference between hot and cold foods, you can make more informed choices about what to eat to maintain balance and promote optimal health. Remember to listen to your body's needs and consult with a TCM practitioner to create a personalized nutrition plan.
