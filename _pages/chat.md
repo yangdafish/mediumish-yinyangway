@@ -1,20 +1,31 @@
 ---
-layout: page
+layout: chat
 title: Welcome to our live chat
-permalink: /chat
-comments: false
+permalink: /chat/
 ---
 
-<div class="row justify-content-between">
-<div class="col-md-8 pr-5">
+<div class="container">
 
- <div id="lex-web-ui"></div>
-<script>
-    window.onload = function() {
-        var loader = new ChatBotUiLoader.IframeLoader();
-        loader.load();
+    <script src="https://d1koxifnypw1ea.cloudfront.net/lex-web-ui-loader.min.js"></script>
+    <script>
+    var loaderOpts = {
+        baseUrl: 'https://d1koxifnypw1ea.cloudfront.net/',
+        shouldLoadMinDeps: true
     };
-</script>
+    var loader = new ChatBotUiLoader.IframeLoader(loaderOpts);
+    var chatbotUiConfig = {
+            /* Example of setting session attributes on parent page
+            lex: {
+                sessionAttributes: {
+                userAgent: navigator.userAgent,
+                QNAClientFilter: ''
+                }
+            }
+            */
+            };
+    loader.load(chatbotUiConfig)
+        .catch(function (error) { console.error(error); });
+    </script>
+    
 
-</div>
 </div>
