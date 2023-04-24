@@ -79,12 +79,28 @@
                         <a class="nav-link" href="{{ site.baseurl }}/index.html">Blog</a>
                     </li>
 
+                    {% if page.url == "/about" %}
+                    <li class="nav-item active">
+                        {% else %}
                     <li class="nav-item">
+                        {% endif %}
                         <a class="nav-link" href="{{ site.baseurl }}/about">About</a>
                     </li>
 
+                    {% if page.url == "/chat/" %}
+                    <li class="nav-item active">
+                        {% else %}
                     <li class="nav-item">
+                        {% endif %}
                         <a class="nav-link" href="{{ site.baseurl }}/chat">Chat</a>
+                    </li>
+
+                    {% if page.url == "/marketplace" %}
+                    <li class="nav-item active">
+                        {% else %}
+                    <li class="nav-item">
+                        {% endif %}
+                        <a class="nav-link" href="https://theyinyangway.myshopify.com/">Marketplace</a>
                     </li>
 
                     {% include search-lunr.html %}

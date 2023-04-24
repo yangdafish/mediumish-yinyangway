@@ -5,7 +5,7 @@ permalink: /chat/
 ---
 
 <div class="container">
-
+<!-- 
     <script src="https://d1koxifnypw1ea.cloudfront.net/lex-web-ui-loader.min.js"></script>
     <script>
     var loaderOpts = {
@@ -26,6 +26,6 @@ permalink: /chat/
     loader.load(chatbotUiConfig)
         .catch(function (error) { console.error(error); });
     </script>
-    
+     -->
 
 </div>
