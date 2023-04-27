@@ -1,6 +1,7 @@
 from datetime import datetime
 import git
 import logging
+import os
 import re
 import sys
 
@@ -15,10 +16,14 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 BLOG_MAX_TOKEN_AMOUNT = 1500
 EDIT_LOOPS = 2
 YINYANGWAY_GITHUB_URL = "https://github.com/yangdafish/yinyangway.git"
+# POSTS_DIR = "../../_posts"
+POSTS_DIR = "_posts"
+CHAT_GPT_BLOG_RETURN_FORMAT = (
+    "a mediumish jekyll blog post with all relevant headers and front matter"
+)
 
 
 def generate_blog_prompt(blog_title):
-    return_format = "a mediumish jekyll blog post in a code block"
     prompt = f"""write a blog post in a soothing, lyrical, conversational tone 
         for chinese traditional medicine 
         on the subject of {blog_title}.
@@ -33,19 +38,18 @@ def generate_blog_prompt(blog_title):
         Group and summarise the supporting arguments. 
         Logically order the supporting ideas. 
         Include a reputable external source if relevant for followup information.
-        Return the result as {return_format}
+        Return the result as {CHAT_GPT_BLOG_RETURN_FORMAT}
     """
     logging.info(f"Constructed ChatGpt Prompt {prompt}")
     return prompt
 
 
 def generate_blog_first_edit_prompt(blog_content):
-    return_format = "a mediumish jekyll blog post in a code block"
     prompt = f"""
         rate and critique the following blog post on a scale of 1 to 10
         Then apply the suggested improvements to the blog and output the edited result
 
-        Return the result as {return_format}
+        Return the result as {CHAT_GPT_BLOG_RETURN_FORMAT}
 
         {blog_content}
     """
@@ -53,12 +57,11 @@ def generate_blog_first_edit_prompt(blog_content):
 
 
 def generate_blog_editing_prompt(blog_content):
-    return_format = "a mediumish jekyll blog post in a code block"
     prompt = f"""
         Edit the following blog post to make it more interesting,
         more engaging, more compelling, and more emotionally resonant.
         
-        Return the result as {return_format}
+        Return the result as {CHAT_GPT_BLOG_RETURN_FORMAT}
 
         {blog_content}
     """
@@ -78,7 +81,7 @@ def create_blog_post_file(blog_content, blog_title):
     # First, we need to create the file name
     file_name = f"{date}-{blog_title}.md"
     # Next, we need to create the file path
-    file_path = f"../../_posts/{file_name}"
+    file_path = f"{POSTS_DIR}/{file_name}"
     # Finally, we can create the file and write the content to it
 
     # Open the file_path/file_name in write mode
@@ -121,9 +124,9 @@ def get_blog_content(blog_title):
         logging.info(f"Editing Blog Content {i} of {EDIT_LOOPS}")
         edit_prompt = generate_blog_editing_prompt(edited_blog_content)
         blog_content_response = get_chatbot_response(
-            edit_prompt, max_tokens=BLOG_MAX_TOKEN_AMOUNT)
-    logging.info(
-        f"Recieved edited blog content response {blog_content_response}")
+            edit_prompt, max_tokens=BLOG_MAX_TOKEN_AMOUNT
+        )
+    logging.info(f"Recieved edited blog content response {blog_content_response}")
     return blog_content_response
 
 
@@ -136,9 +139,10 @@ def process_blog_title(blog_title):
     # Next, we need to replace spaces with underscores
     blog_title_space = blog_title_lower.replace(" ", "_")
     # replace non-word characters with _
-    blog_title_final = re.sub(r'\W+', '_', blog_title_space)
+    blog_title_final = re.sub(r"\W+", "_", blog_title_space)
     logging.info(
-        f"Returning blog title {blog_title_final} from process_blog_title {blog_title}")
+        f"Returning blog title {blog_title_final} from process_blog_title {blog_title}"
+    )
     return blog_title_final
 
 
@@ -148,14 +152,44 @@ def write_new_blog_to_local(blog_title):
     # It will return the path to the new blog post
 
     blog_content = get_blog_content(blog_title)
+
     normalized_blog_title = process_blog_title(blog_title)
     blog_path = create_blog_post_file(blog_content, normalized_blog_title)
     logging.info(f"Created new blog post {blog_path}")
     return blog_path
 
 
-def generate_blog_prompt_from_chatbot():
-    pass
+def generate_blog_title_from_chatbot():
+    # generate blog title using chatgpt
+    # if the blog title already exists, generate a new one
+    # return the blog title
+
+    existing_blog_titles = []
+    # Scan the _posts folder for existing blog titles
+    for file in os.listdir(POSTS_DIR):
+        if file.endswith(".md"):
+            # existing_blog_titles.append(file)
+            # scan the file for the blog title
+            with open(f"_posts/{file}", "r") as f:
+                for line in f:
+                    if line.startswith("title:"):
+                        existing_blog_titles.append(line.split(":")[1].strip())
+                        break
+    logging.info(f"Existing Titles {existing_blog_titles}")
+    prompt = f"""
+        Generate a captivating and high-performing blog title that appeals to a wide audience,
+        incorporating current trends and popular topics in a creative and engaging way
+        for a mediumish jekyll blog post on the subject of chinese traditional medicine.
+
+        Blog title should differ from any of the following {existing_blog_titles}
+    """  ## Along with a small summary of the blog post.
+    logging.info(f"Prompt {prompt}")
+    blog_title = get_chatbot_response(
+        prompt,
+        max_tokens=BLOG_MAX_TOKEN_AMOUNT,
+    )
+    logging.info(f"Recieved blog title response {blog_title}")
+    return blog_title
 
 
 def update_yinyangway(blog_title):
@@ -167,22 +201,36 @@ def update_yinyangway(blog_title):
     #     blog_title = generate_blog_prompt_from_chatbot()
 
     # new_blog_path = write_new_blog_to_local(blog_title)
-    new_blog_path = "_posts/2023-04-24-the_art_of_acupuncture__demystifying_the_ancient_practice_and_its_benefits_for_modern_living.md"
+    # new_blog_path = f"{POSTS_DIR}/}"
+    # new_blog_path = "_posts/2023-04-24-the_art_of_acupuncture__demystifying_the_ancient_practice_and_its_benefits_for_modern_living.md"
     repo = git.Repo("./")
-    origin = repo.remote(name="origin")
-    origin.set_url("git@github.com:yangdafish/mediumish-yinyangway.git")
-    repo.git.add(new_blog_path)
-    commit_message = f"Added new blog post {blog_title}"
-    commit = repo.index.commit(commit_message)
-    logging.info("Committed changes to local repo {commit}")
-    # Push the changes to the remote repo
+    # origin = repo.remote(name="origin")
+    # origin.set_url("git@github.com:yangdafish/mediumish-yinyangway.git")
 
-    push_result = origin.push()
-    logging.info(f"Pushed changes to remote repo {push_result}")
+    # Check for uncommitted changes
+    push_result = None
+    if repo.is_dirty():
+        # Stage updated files
+        repo.git.add(update=True)
+
+        # repo.git.add(new_blog_path)
+        commit_message = f"Added new blog post {blog_title}"
+        commit = repo.index.commit(commit_message)
+        # Set up the authentication token
+        os.environ["GIT_AUTH_TOKEN"] = os.getenv("GITHUB_TOKEN")
+        logging.info(f"Committed changes to local repo {commit}")
+        # Set up the push URL with the token
+        remote_name = "origin"
+        repo_url = "https://yangdafish:$(GIT_AUTH_TOKEN)@github.com/yangdafish/mediumish-yinyangway.git"
+        repo.git.config(f"remote.{remote_name}.url", repo_url, local=True)
+
+        # Push the changes to the remote repository
+        push_result = repo.git.push()
+        logging.info(f"Pushed changes to remote repo {push_result}")
 
     return push_result
 
 
 if __name__ == "__main__":
-    update_yinyangway(
-        "The Art of Acupuncture: Demystifying the Ancient Practice and Its Benefits for Modern Living")
+    blog_title = generate_blog_title_from_chatbot()
+    update_yinyangway(blog_title)
