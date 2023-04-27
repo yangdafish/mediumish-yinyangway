@@ -1,8 +1,10 @@
 ---
-layout: post
-title: "The Art of Acupuncture: Demystifying the Ancient Practice and Its Benefits for Modern Living"
-date: 2021-10-06 08:00:00 -0000
 categories: acupuncture wellness holistic
+date: 2023-04-24 08:00:00 -0000
+image: assets/images/acupuncture.jpg
+layout: post
+title: 'The Art of Acupuncture: Demystifying the Ancient Practice and Its Benefits
+  for Modern Living'
 ---
 
 Are you tired of feeling stressed, anxious, or in pain? Do you wish for a natural, holistic way to achieve balance and wellness? Look no further than the ancient practice of acupuncture.
