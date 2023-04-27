@@ -4,4 +4,4 @@ _site
 .sass-cache
 *~
 *.pyc
-.env
+*.env
