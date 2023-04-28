@@ -18,28 +18,29 @@ EDIT_LOOPS = 2
 YINYANGWAY_GITHUB_URL = "https://github.com/yangdafish/yinyangway.git"
 # POSTS_DIR = "../../_posts"
 POSTS_DIR = "_posts"
-CHAT_GPT_BLOG_RETURN_FORMAT = (
-    "a mediumish jekyll blog post with all relevant headers and front matter"
-)
+CHAT_GPT_BLOG_RETURN_FORMAT = """a blog post including a title, layout, the current date, unique categories and tags in a mediumish jekyll format"""
+CHAT_GPT_BLOG_SUBJECT = "chinese traditional medicine "
 
 
 def generate_blog_prompt(blog_title):
     prompt = f"""write a blog post in a soothing, lyrical, conversational tone 
-        for chinese traditional medicine 
+        for {CHAT_GPT_BLOG_SUBJECT}
         on the subject of {blog_title}.
         Try to include an attention-grabbing headline,
         a captivating lead paragraph,
         and a compelling conclusion,
         without being overly repetitive in phrases or wording. 
+        Have multiple sections with subheadings.
         Include up to one relevant historical quote,
         up to one relevant metric, 
         and up to one interesting factoid. 
-        Start with the compelling call-to-action or answer first. 
-        Group and summarise the supporting arguments. 
-        Logically order the supporting ideas. 
-        Include a reputable external source if relevant for followup information.
         Return the result as {CHAT_GPT_BLOG_RETURN_FORMAT}
     """
+    # Start with the compelling call-to-action or answer first.
+    # Group and summarise the supporting arguments.
+    # Logically order the supporting ideas.
+    # Include a reputable external source if relevant for followup information.
+
     logging.info(f"Constructed ChatGpt Prompt {prompt}")
     return prompt
 
@@ -177,11 +178,11 @@ def generate_blog_title_from_chatbot():
                         break
     logging.info(f"Existing Titles {existing_blog_titles}")
     prompt = f"""
-        Generate a captivating and high-performing blog title that appeals to a wide audience,
+        Generate a single captivating and high-performing blog titles not in this list {existing_blog_titles}
         incorporating current trends and popular topics in a creative and engaging way
-        for a mediumish jekyll blog post on the subject of chinese traditional medicine.
+        for a subject related to chinese traditional medicine.
+        The subject of the title should invoque a sense of curiosity and intrigue.
 
-        Blog title should differ from any of the following {existing_blog_titles}
     """  ## Along with a small summary of the blog post.
     logging.info(f"Prompt {prompt}")
     blog_title = get_chatbot_response(
@@ -200,35 +201,51 @@ def update_yinyangway(blog_title):
     # if not blog_title:
     #     blog_title = generate_blog_prompt_from_chatbot()
 
-    # new_blog_path = write_new_blog_to_local(blog_title)
+    new_blog_path = write_new_blog_to_local(blog_title)
     # new_blog_path = f"{POSTS_DIR}/}"
     # new_blog_path = "_posts/2023-04-24-the_art_of_acupuncture__demystifying_the_ancient_practice_and_its_benefits_for_modern_living.md"
+    # commit_message = git_add(
+    #     new_blog_path, "Added new blog post {blog_title}"
+    # )
+    # logging.info(f"Commited {commit_message}")
+    logging.info(f"Created New Blog {new_blog_path} For Title {blog_title}")
+    return new_blog_path
+
+
+def git_add(file):
     repo = git.Repo("./")
     # origin = repo.remote(name="origin")
     # origin.set_url("git@github.com:yangdafish/mediumish-yinyangway.git")
 
     # Check for uncommitted changes
-    push_result = None
+    add_result = None
     if repo.is_dirty():
         # Stage updated files
-        repo.git.add(update=True)
+        # repo.git.add(update=True)
 
-        # repo.git.add(new_blog_path)
-        commit_message = f"Added new blog post {blog_title}"
-        commit = repo.index.commit(commit_message)
+        add_result = repo.git.add(file)
+        # commit_message = f"Added new blog post {blog_title}"
+        # commit = repo.index.commit(commit_message)
         # Set up the authentication token
-        os.environ["GIT_AUTH_TOKEN"] = os.getenv("GITHUB_TOKEN")
-        logging.info(f"Committed changes to local repo {commit}")
+        # git_auth_token = os.getenv("GITHUB_TOKEN")
+        # logging.info(f"Committed changes to local repo {commit}")
         # Set up the push URL with the token
-        remote_name = "origin"
-        repo_url = "https://yangdafish:$(GIT_AUTH_TOKEN)@github.com/yangdafish/mediumish-yinyangway.git"
-        repo.git.config(f"remote.{remote_name}.url", repo_url, local=True)
+        # remote_name = "origin"
+        # repo_url = f"https://yangdafish:{git_auth_token}@github.com/yangdafish/mediumish-yinyangway.git"
+        # repo.git.config(f"remote.{remote_name}.url", repo_url, local=True)
 
         # Push the changes to the remote repository
-        push_result = repo.git.push()
-        logging.info(f"Pushed changes to remote repo {push_result}")
+        # push_result = repo.git.push()
+        # logging.info(f"Pushed changes to remote repo {push_result}")
 
-    return push_result
+    return add_result
+
+
+def git_commit(commit_message):
+    repo = git.Repo("./")
+    commit = repo.index.commit(commit_message)
+    logging.info(f"Committed changes to local repo {commit}")
+    return commit
 
 
 if __name__ == "__main__":
